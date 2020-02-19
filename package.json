@@ -1,0 +1,24 @@
+{
+  "name": "pcap-reader",
+  "version": "1.0.0",
+  "description": "For reading .pcap files in a browser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benfoxall/pcap-reader.git"
+  },
+  "keywords": [
+    "pcap",
+    "streams",
+    "fetch"
+  ],
+  "author": "Ben Foxall (@benjaminbenben)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/benfoxall/pcap-reader/issues"
+  },
+  "homepage": "https://github.com/benfoxall/pcap-reader#readme"
+}
