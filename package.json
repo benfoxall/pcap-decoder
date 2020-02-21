@@ -4,7 +4,8 @@
   "description": "For reading .pcap files in a browser",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run tsc"
   },
   "repository": {
     "type": "git",
@@ -20,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/benfoxall/pcap-reader/issues"
   },
-  "homepage": "https://github.com/benfoxall/pcap-reader#readme"
+  "homepage": "https://github.com/benfoxall/pcap-reader#readme",
+  "devDependencies": {
+    "typescript": "^3.7.5"
+  }
 }
