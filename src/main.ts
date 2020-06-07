@@ -5,14 +5,14 @@ import {
   GlobalHeader,
 } from "./parse";
 
-class Parser {
-  header: GlobalHeader;
+export class Parser {
+  header?: GlobalHeader;
 
   private data = new Uint8Array(0);
-  private packetHeader: PacketHeader;
+  private packetHeader?: PacketHeader;
 
   /** consume a chunk, return any packets found */
-  *parse(chunk: Uint8Array | ArrayBuffer) {
+  *parse(chunk: Uint8Array): any {
     if (chunk instanceof ArrayBuffer) {
       return this.parse(new Uint8Array(chunk));
     }
@@ -22,44 +22,31 @@ class Parser {
     if (!this.header) {
       const data = this.read(24);
 
-      if (data) {
-        this.header = parseGlobalHeader(data);
-      } else {
-        return;
-      }
+      if (!data) return;
+
+      this.header = parseGlobalHeader(data);
     }
 
     while (true) {
       if (!this.packetHeader) {
         const data = this.read(16);
-        if (data) {
-          this.packetHeader = parsePacketHeader(
-            data,
-            this.header.little_endian
-          );
-        } else {
-          return;
-        }
+
+        if (!data) return;
+
+        this.packetHeader = parsePacketHeader(data, this.header.little_endian);
       }
 
       const body = this.read(this.packetHeader.incl_len);
 
-      if (body) {
-        const header = this.packetHeader;
-        this.packetHeader = null;
+      console.log("BOD");
 
-        yield {
-          header,
-          body,
-        };
-      } else {
-        return;
-      }
+      if (!body) return;
+
+      const header = this.packetHeader;
+      this.packetHeader = undefined;
+
+      yield { header, body };
     }
-  }
-
-  private has(len: number) {
-    return this.data.length < len;
   }
 
   // try to read bytes from data
@@ -85,30 +72,32 @@ class Parser {
   }
 }
 
-import { Transform } from "stream";
+import { Transform, TransformCallback } from "stream";
 
-class NodeTransform extends Transform {
+class NodeStream extends Transform {
   private parser = new Parser();
 
   constructor() {
     super({ readableObjectMode: true });
   }
 
-  _transform(data, encoding: string, callback) {
-    if (!Buffer.isBuffer(data)) {
+  _transform(
+    chunk: any,
+    encoding: BufferEncoding,
+    callback: TransformCallback
+  ) {
+    if (!Buffer.isBuffer(chunk)) {
       return callback(new Error("Expected Buffer"));
     }
 
-    const u8 = new Uint8Array(data);
-
-    for (const packet of this.parser.parse(u8)) {
+    for (const packet of this.parser.parse(chunk)) {
       this.push(packet);
     }
 
     callback();
   }
 
-  _flush(callback) {
+  _flush(callback: TransformCallback) {
     callback();
   }
 }
@@ -116,7 +105,7 @@ class NodeTransform extends Transform {
 // Test script
 import { createReadStream } from "fs";
 
-const transformer = new NodeTransform();
+const transformer = new NodeStream();
 
 transformer.on("data", (value) => {
   console.log("\n📦", value.header);
@@ -127,3 +116,6 @@ transformer.on("end", () => {
 });
 
 createReadStream("./sample-files/ipp.pcap").pipe(transformer);
+
+// nodeStream
+// webStream
