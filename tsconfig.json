@@ -1,13 +1,9 @@
 {
-    "compilerOptions": {
-      "target": "ESNext",
-        "module": "ESNext",
-        "outDir": "./dist",
-        "sourceMap": true,
-        "declaration": true
-    },
-    "include": [
-      "src/**/*"
-    ],
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2015",
+    "declaration": true,
+    "strict": true
+  },
+  "include": ["src/**/*"]
 }
-
