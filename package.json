@@ -7,11 +7,6 @@
   "files": [
     "dist/*"
   ],
-  "exports": {
-    ".": "dist/main.js",
-    "./web": "./dist/webStream.js",
-    "./node": "./dist/nodeStream.js"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c",

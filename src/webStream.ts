@@ -1,25 +1,12 @@
 // Based from https://mdn.github.io/dom-examples/streams/simple-pump/
 
-import { Reader, Packet } from "./reader";
+import Reader, { Packet } from "./reader";
 
-// fetch("./tortoise.png")
-//   // Retrieve its body as ReadableStream
-//   .then((response) => response.body)
-//   .then((rs) => {
-//     if (rs) {
-//       const reader = rs.getReader();
+const stream = (stream: ReadableStream<Uint8Array> | null) => {
+  if (stream === null) return null;
 
-//       const s2 = WebStream(reader);
+  const reader = stream.getReader();
 
-//       const x2 = s2.getReader();
-
-//       x2.read().then((e) => {
-//         // e.value?.header.
-//       });
-//     }
-//   });
-
-const WebStream = (reader: ReadableStreamDefaultReader<Uint8Array>) => {
   const parser = new Reader();
 
   return new ReadableStream<Packet>({
@@ -45,4 +32,25 @@ const WebStream = (reader: ReadableStreamDefaultReader<Uint8Array>) => {
   });
 };
 
-export default WebStream;
+export default stream;
+
+/*
+// Example usage
+
+fetch("./tortoise.png")
+  // Retrieve its body as ReadableStream
+  .then((response) => stream(response.body))
+
+  .then(async (rs) => {
+    if (rs) {
+      const reader = rs.getReader();
+
+      reader.read().then((e) => {
+        console.log("Packet!", e.value);
+
+        rs.cancel();
+      });
+    }
+  });
+
+//*/

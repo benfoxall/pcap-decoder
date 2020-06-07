@@ -1,4 +1,4 @@
-import { Reader } from "./reader";
+import Reader from "./reader";
 
 import { Transform, TransformCallback } from "stream";
 
@@ -30,7 +30,8 @@ export class NodeStream extends Transform {
   }
 }
 
-// Test script
+/*
+// Example usage
 import { createReadStream } from "fs";
 
 const transformer = new NodeStream();
@@ -45,5 +46,4 @@ transformer.on("end", () => {
 
 createReadStream("./sample-files/ipp.pcap").pipe(transformer);
 
-// nodeStream
-// webStream
+// */
