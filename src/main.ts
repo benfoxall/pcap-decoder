@@ -6,42 +6,60 @@ import {
 } from "./parse";
 
 class Parser {
-  private data = new Uint8Array(0);
-  private header: GlobalHeader;
+  header: GlobalHeader;
 
+  private data = new Uint8Array(0);
   private packetHeader: PacketHeader;
 
   /** consume a chunk, return any packets found */
-  *parse(chunk: Uint8Array) {
+  *parse(chunk: Uint8Array | ArrayBuffer) {
+    if (chunk instanceof ArrayBuffer) {
+      return this.parse(new Uint8Array(chunk));
+    }
+
     this.append(chunk);
 
     if (!this.header) {
       const data = this.read(24);
-      if (data === null) return;
 
-      this.header = parseGlobalHeader(data);
+      if (data) {
+        this.header = parseGlobalHeader(data);
+      } else {
+        return;
+      }
     }
 
     while (true) {
       if (!this.packetHeader) {
-        const he = this.read(16);
-        if (he === null) break;
-
-        this.packetHeader = parsePacketHeader(he, this.header.little_endian);
+        const data = this.read(16);
+        if (data) {
+          this.packetHeader = parsePacketHeader(
+            data,
+            this.header.little_endian
+          );
+        } else {
+          return;
+        }
       }
 
       const body = this.read(this.packetHeader.incl_len);
 
-      if (body === null) break;
+      if (body) {
+        const header = this.packetHeader;
+        this.packetHeader = null;
 
-      const header = this.packetHeader;
-      this.packetHeader = null;
-
-      yield {
-        header,
-        body,
-      };
+        yield {
+          header,
+          body,
+        };
+      } else {
+        return;
+      }
     }
+  }
+
+  private has(len: number) {
+    return this.data.length < len;
   }
 
   // try to read bytes from data
@@ -52,10 +70,10 @@ class Parser {
 
     // this should be fairly cheap because it's
     // data views rather than the buffer
-    const p1 = this.data.subarray(0, len);
+    const target = this.data.subarray(0, len);
     this.data = this.data.subarray(len);
 
-    return p1;
+    return target;
   }
 
   private append(chunk: Uint8Array) {
@@ -69,7 +87,7 @@ class Parser {
 
 import { Transform } from "stream";
 
-class MyTransform extends Transform {
+class NodeTransform extends Transform {
   private parser = new Parser();
 
   constructor() {
@@ -98,9 +116,7 @@ class MyTransform extends Transform {
 // Test script
 import { createReadStream } from "fs";
 
-const file = createReadStream("./sample-files/ipp.pcap");
-
-const transformer = new MyTransform();
+const transformer = new NodeTransform();
 
 transformer.on("data", (value) => {
   console.log("\n📦", value.header);
@@ -110,4 +126,4 @@ transformer.on("end", () => {
   console.log("ended");
 });
 
-file.pipe(transformer);
+createReadStream("./sample-files/ipp.pcap").pipe(transformer);
