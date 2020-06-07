@@ -1,4 +1,4 @@
-import {invariant} from './helpers'
+import { invariant } from "./helpers";
 
 export interface GlobalHeader {
   /** major version number */
@@ -28,24 +28,21 @@ export interface GlobalHeader {
 // } pcap_hdr_t;
 
 export const parseGlobalHeader = (u8: Uint8Array): GlobalHeader => {
+  invariant(u8.byteLength === 6 * 4, "Expected 24 bytes");
 
-  invariant(u8.byteLength === 6 * 4)
+  const view = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
 
-  const view = new DataView(
-    u8.buffer, u8.byteOffset, u8.byteLength
-  )
-  
-  const magic = view.getUint32(0)
+  const magic = view.getUint32(0);
   let little_endian = false;
 
-  switch(magic) {
+  switch (magic) {
     case 0xa1b2c3d4:
-      break
+      break;
     case 0xd4c3b2a1:
-      little_endian = true
-      break
+      little_endian = true;
+      break;
     default:
-      throw new Error("Unknown file format")
+      throw new Error("Unknown file format");
   }
 
   return {
@@ -56,9 +53,9 @@ export const parseGlobalHeader = (u8: Uint8Array): GlobalHeader => {
     snaplen: view.getUint32(16, little_endian),
     network: view.getUint32(20, little_endian),
 
-    little_endian
-  }
-}
+    little_endian,
+  };
+};
 
 export interface PacketHeader {
   /** timestamp seconds */
@@ -78,18 +75,18 @@ export interface PacketHeader {
 //   guint32 orig_len;       /* actual length of packet */
 // } pcaprec_hdr_t;
 
-export const parsePacketHeader = (u8: Uint8Array, endian = false): PacketHeader => {
+export const parsePacketHeader = (
+  u8: Uint8Array,
+  endian: boolean
+): PacketHeader => {
+  invariant(u8.byteLength === 4 * 4, "Expected 16 bytes");
 
-  invariant(u8.byteLength === 4 * 4)
-
-  const view = new DataView(
-    u8.buffer, u8.byteOffset, u8.byteLength
-  )
+  const view = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
 
   return {
     ts_sec: view.getUint32(0, endian),
     ts_usec: view.getUint32(4, endian),
     incl_len: view.getUint32(8, endian),
     orig_len: view.getUint32(12, endian),
-  }
-}
+  };
+};
