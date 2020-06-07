@@ -1,7 +1,7 @@
 import typescript from "rollup-plugin-typescript2";
 
 export default {
-  input: ["src/main.ts", "src/parse.ts"],
+  input: ["src/reader.ts", "src/nodeStream.ts", "src/webStream.ts"],
   output: {
     dir: "dist",
     format: "cjs",
