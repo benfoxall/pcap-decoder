@@ -4,7 +4,7 @@ export default {
   input: ["src/reader.ts", "src/nodeStream.ts", "src/webStream.ts"],
   output: {
     dir: "dist",
-    format: "cjs",
+    format: "es",
   },
   external: ["stream", "fs"],
   plugins: [typescript()],

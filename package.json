@@ -2,10 +2,16 @@
   "name": "pcap-reader",
   "version": "1.0.0",
   "description": "For reading .pcap files",
+  "type": "module",
   "main": "dist/reader.js",
   "files": [
     "dist/*"
   ],
+  "exports": {
+    ".": "dist/main.js",
+    "./web": "./dist/webStream.js",
+    "./node": "./dist/nodeStream.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c",
@@ -35,5 +41,8 @@
     "ts-node-dev": "^1.0.0-pre.44",
     "tslib": "^2.0.0",
     "typescript": "^3.9.5"
+  },
+  "engines": {
+    "node": ">=13"
   }
 }
