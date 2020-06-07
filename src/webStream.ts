@@ -2,22 +2,22 @@
 
 import { Reader, Packet } from "./reader";
 
-fetch("./tortoise.png")
-  // Retrieve its body as ReadableStream
-  .then((response) => response.body)
-  .then((rs) => {
-    if (rs) {
-      const reader = rs.getReader();
+// fetch("./tortoise.png")
+//   // Retrieve its body as ReadableStream
+//   .then((response) => response.body)
+//   .then((rs) => {
+//     if (rs) {
+//       const reader = rs.getReader();
 
-      const s2 = WebStream(reader);
+//       const s2 = WebStream(reader);
 
-      const x2 = s2.getReader();
+//       const x2 = s2.getReader();
 
-      x2.read().then((e) => {
-        // e.value?.header.
-      });
-    }
-  });
+//       x2.read().then((e) => {
+//         // e.value?.header.
+//       });
+//     }
+//   });
 
 const WebStream = (reader: ReadableStreamDefaultReader<Uint8Array>) => {
   const parser = new Reader();
