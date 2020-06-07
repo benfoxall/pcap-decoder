@@ -1,54 +1,58 @@
+console.log("--");
 
-type Provider = (size: number) => Promise<Uint8Array>;
+import {
+  parseGlobalHeader,
+  parsePacketHeader,
+  PacketHeader,
+  GlobalHeader,
+} from "./parse";
 
-import {parseGlobalHeader, parseHeader} from './parse'
+console.log(parseGlobalHeader);
 
+type Read = (n: number | null) => Promise<Uint8Array>;
 
-export async function * parse(read: Provider) {
+const pullStream = (source: ReadStream): Read => {
+  const pull = async (n: number) => {
+    const first = source.read(n);
+    if (first !== null) return new Uint8Array(first);
 
-  yield parseGlobalHeader(await read(6 * 4));
+    await new Promise((resolve) => source.once("readable", resolve));
 
-  while(true) {
+    return pull(n);
+  };
 
-    const head = parseHeader(await read(4 * 4))
+  return pull;
+};
 
-    const body = await read(head.orig_len)
+async function* pcapReader(read: Read) {
+  const globalHeader = parseGlobalHeader(await read(24));
+  console.log(globalHeader);
 
-    yield [head, body]
+  let i = 6;
+  while (i--) {
+    const header = parsePacketHeader(
+      await read(16),
+      globalHeader.little_endian
+    );
+    const body = await read(header.orig_len);
 
+    yield { ph: header, pb: body };
   }
-
 }
 
+// Test script
+import { createReadStream, ReadStream } from "fs";
+import { Readable } from "stream";
 
+const file = createReadStream("./sample-files/ipv4frags.pcap");
 
-// 6 * 32
+// file.pipe()
 
-// typedef struct pcap_hdr_s {
-//   guint32 magic_number;   /* magic number */
-//   guint16 version_major;  /* major version number */
-//   guint16 version_minor;  /* minor version number */
-//   gint32  thiszone;       /* GMT to local correction */
-//   guint32 sigfigs;        /* accuracy of timestamps */
-//   guint32 snaplen;        /* max length of captured packets, in octets */
-//   guint32 network;        /* data link type */
-// } pcap_hdr_t;
+const pull = pullStream(file);
 
-
-// 4 * 32
-
-// typedef struct pcaprec_hdr_s {
-//   guint32 ts_sec;         /* timestamp seconds */
-//   guint32 ts_usec;        /* timestamp microseconds */
-//   guint32 incl_len;       /* number of octets of packet saved in file */
-//   guint32 orig_len;       /* actual length of packet */
-// } pcaprec_hdr_t;
-
-
-// function parseGlobalHeader(buffer: Uint8Array): any {}
-// function parseHeader(buffer: Uint8Array): any {}
-
-
-const reader = () => {
-
-}
+// pcapReader(pull);
+(async () => {
+  for await (const p of pcapReader(pull)) {
+    console.log("Packet!", p);
+  }
+})();
