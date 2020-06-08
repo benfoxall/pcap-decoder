@@ -28,12 +28,9 @@
   },
   "homepage": "https://github.com/benfoxall/pcap-decoder#readme",
   "devDependencies": {
-    "@rollup/plugin-typescript": "^4.1.2",
     "@types/node": "^14.0.11",
-    "nodemon": "^2.0.4",
     "rollup": "^2.14.0",
     "rollup-plugin-typescript2": "^0.27.1",
-    "ts-node-dev": "^1.0.0-pre.44",
     "tslib": "^2.0.0",
     "typescript": "^3.9.5"
   },
