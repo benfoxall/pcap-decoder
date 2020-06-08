@@ -3,16 +3,16 @@ export interface Packet {
   body: Uint8Array;
 }
 
-export default class Reader {
+export default class Decoder {
   header?: GlobalHeader;
 
   private data = new Uint8Array(0);
   private packetHeader?: PacketHeader;
 
   /** consume a chunk, return any packets found */
-  *parse(chunk: Uint8Array): Generator<Packet> {
+  *decode(chunk: Uint8Array): Generator<Packet> {
     if (chunk instanceof ArrayBuffer) {
-      return this.parse(new Uint8Array(chunk));
+      return this.decode(new Uint8Array(chunk));
     }
 
     this.append(chunk);

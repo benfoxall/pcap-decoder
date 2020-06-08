@@ -1,13 +1,13 @@
 // Based from https://mdn.github.io/dom-examples/streams/simple-pump/
 
-import Reader, { Packet } from "./reader";
+import Decoder, { Packet } from "./decoder";
 
 const stream = (stream: ReadableStream<Uint8Array> | null) => {
   if (stream === null) return null;
 
   const reader = stream.getReader();
 
-  const parser = new Reader();
+  const parser = new Decoder();
 
   return new ReadableStream<Packet>({
     async pull(controller) {
@@ -19,7 +19,7 @@ const stream = (stream: ReadableStream<Uint8Array> | null) => {
       }
 
       if (value) {
-        for (const packet of parser.parse(value)) {
+        for (const packet of parser.decode(value)) {
           controller.enqueue(packet);
         }
       }

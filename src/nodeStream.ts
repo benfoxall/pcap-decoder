@@ -1,9 +1,9 @@
-import Reader from "./reader";
+import Decoder from "./decoder";
 
 import { Transform, TransformCallback } from "stream";
 
 export class NodeStream extends Transform {
-  private parser = new Reader();
+  private parser = new Decoder();
 
   constructor() {
     super({ readableObjectMode: true });
@@ -18,7 +18,7 @@ export class NodeStream extends Transform {
       return callback(new Error("Expected Buffer"));
     }
 
-    for (const packet of this.parser.parse(chunk)) {
+    for (const packet of this.parser.decode(chunk)) {
       this.push(packet);
     }
 
