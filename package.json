@@ -1,5 +1,5 @@
 {
-  "name": "pcap-reader",
+  "name": "pcap-decoder",
   "version": "1.0.2",
   "description": "For reading .pcap files",
   "type": "module",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/benfoxall/pcap-reader.git"
+    "url": "git+https://github.com/benfoxall/pcap-decoder.git"
   },
   "keywords": [
     "pcap",
@@ -24,9 +24,9 @@
   "author": "Ben Foxall (@benjaminbenben)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/benfoxall/pcap-reader/issues"
+    "url": "https://github.com/benfoxall/pcap-decoder/issues"
   },
-  "homepage": "https://github.com/benfoxall/pcap-reader#readme",
+  "homepage": "https://github.com/benfoxall/pcap-decoder#readme",
   "devDependencies": {
     "@rollup/plugin-typescript": "^4.1.2",
     "@types/node": "^14.0.11",
