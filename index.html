@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<title> </title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
+
+<body class="w-100 sans-serif bg-white">
+
+  <main class="pa3 pa5-ns">
+    <h1 class="f3 f1-m f-headline-l">PCAP Decoder</h1>
+
+    <output></output>
+
+    <script type="module">
+      import webStream from 'https://unpkg.com/pcap-decoder@1.0.2/dist/webStream.js'
+
+
+      const output = document.querySelector('output');
+      const add = (str, cls) => {
+        const code = document.createElement('code')
+        code.className = cls;
+        code.innerText = str;
+        output.appendChild(code)
+      }
+
+
+      fetch("sample-files/ipp.pcap")
+        .then(async res => {
+          const stream = webStream(res.body)
+
+          const reader = stream.getReader();
+
+          let i = 20
+
+          while (true) {
+
+            const { value, done } = await reader.read();
+
+            if (done) break;
+
+            console.log(value)
+
+            const ts = `time=${value.header.ts_usec}, size=${value.header.orig_len}`
+
+            add(ts, 'pt3 f3 lh-copy db')
+
+            const b = value.body.slice(0, 20)
+            const str =
+              Array.from(b, n => n.toString(16).padStart(2, '0'))
+                .join(' ')
+
+            add(str, '')
+
+          }
+
+          reader.releaseLock()
+          stream.cancel();
+
+        })
+
+    </script>
+  </main>
+
+
+</body>
+
+</html>

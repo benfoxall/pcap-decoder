@@ -30,7 +30,7 @@ import webStream from "pcap-decoder/dist/webStream.js";
   const stream = webStream(response.body);
 
   // read the first packet
-  const { value } = stream.getReader().read();
+  const { value } = await stream.getReader().read();
 
   // then stop the stream
   stream.cancel();
