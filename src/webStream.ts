@@ -10,24 +10,23 @@ const stream = (stream: ReadableStream<Uint8Array> | null) => {
   const parser = new Reader();
 
   return new ReadableStream<Packet>({
-    async start(controller) {
-      while (true) {
-        const { done, value } = await reader.read();
+    async pull(controller) {
+      const { done, value } = await reader.read();
 
-        if (done) {
-          break;
-        }
-
-        if (value) {
-          for (const packet of parser.parse(value)) {
-            controller.enqueue(packet);
-          }
-        }
+      if (done) {
+        // not sure if I should release lock too?
+        controller.close();
       }
 
-      // Close the stream
-      controller.close();
-      reader.releaseLock();
+      if (value) {
+        for (const packet of parser.parse(value)) {
+          controller.enqueue(packet);
+        }
+      }
+    },
+
+    cancel(reason) {
+      reader.cancel();
     },
   });
 };
