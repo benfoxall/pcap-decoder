@@ -1,0 +1,16 @@
+name: CI
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: 📦 Install Modules
+        run: npm ci
+
+      - name: 🧐 Test
+        run: npm test
