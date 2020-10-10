@@ -15,6 +15,9 @@ jobs:
 
       - name: 🧐 Test
         run: npm test
+        
+      - name: 🏗 build
+        run: npm run build
 
       - name: 🚢 Publish
         uses: JS-DevTools/npm-publish@v1
