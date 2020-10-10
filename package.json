@@ -1,6 +1,6 @@
 {
   "name": "pcap-decoder",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "For reading .pcap files",
   "type": "module",
   "main": "dist/decoder.js",
