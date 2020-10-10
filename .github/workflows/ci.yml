@@ -8,9 +8,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
 
       - name: 📦 Install Modules
         run: npm ci
 
       - name: 🧐 Test
         run: npm test
+
+      - name: 🚢 Publish
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+            token: ${{ secrets.NPM_TOKEN }}
