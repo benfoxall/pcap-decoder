@@ -7,5 +7,7 @@ export default {
     format: "es",
   },
   external: ["stream", "fs"],
-  plugins: [typescript()],
+  plugins: [typescript({
+    tsconfig: "./tsconfig.rollup.json"
+  })],
 };
